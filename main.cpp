@@ -1,7 +1,9 @@
 #include <iostream>
 #include <conio.h>
-#include <GL/gl.h>
-#include "include/GLFW/glfw3.h"
+#include <vector>
+
+#include "inc_ogl.h"
+#include "renderer.h"
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
@@ -11,7 +13,11 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 int main ()
 {
-	glfwInit();
+	if (!glfwInit()) {
+		std::cout << "Failed to initialise GLFW" << std::endl;
+		return -1;
+	}
+	
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -26,20 +32,47 @@ int main ()
 		return -1;
 	}
 	glfwMakeContextCurrent(window);
+	
+	glewExperimental = true;
+	if (glewInit() != GLEW_OK) {
+		std::cout << "Failed to initialise GLEW" << std::endl;
+		glfwTerminate();
+		return -1;
+	}
+
 	glfwSetKeyCallback(window, key_callback); 
 	  
 	glViewport(0, 0, width, height);
 
-	glClearColor(0.0, 1.0, 0.0, 1.0);
-	
-	while (!glfwWindowShouldClose(window)) {
-		glfwPollEvents();
+	glClearColor(0.0, 0.0, 0.0, 1.0);
 
-		glClear(GL_COLOR_BUFFER_BIT);
+	renderer_info info;
 
-		glfwSwapBuffers(window);
-	}
+	std::vector<GLfloat> vertices = {
+		-0.5, 0.5, 0.0,
+		-0.5, -0.5, 0.0,
+		0.5, -0.5, 0.0,
+		0.5, 0.5, 0.0,
+	};
 
-	glfwTerminate();
-	return 0;
+	info.VAO = gen_VAO(vertices);
+	info.shader_prog = gen_shader_prog(
+		"e:\\proj\\platformer\\shaders\\vertex\\default.glsl",
+		"e:\\proj\\platformer\\shaders\\fragment\\default.glsl");
+ 
+    while (!glfwWindowShouldClose(window))
+    {
+        glClear(GL_COLOR_BUFFER_BIT);
+ 
+        draw(info);
+ 
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+ 
+    // glDeleteVertexArrays(1, &info.VAO);
+    // glDeleteBuffers(1, &info.VBO);
+ 
+    glfwTerminate();
+    return 0;
 }
