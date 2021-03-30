@@ -14,7 +14,7 @@ struct renderer_info {
 
 GLuint gen_VBO (std::vector<GLfloat> vertices);
 
-GLuint gen_VAO (std::vector<GLfloat> vertices);
+GLuint gen_VAO (GLuint VBO);
 
 GLuint gen_shader_prog (
 	std::string vertex_path, 

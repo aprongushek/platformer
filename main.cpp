@@ -55,7 +55,8 @@ int main ()
 		0.5, 0.5, 0.0,
 	};
 
-	info.VAO = gen_VAO(vertices);
+	info.VBO = gen_VBO(vertices);
+	info.VAO = gen_VAO(info.VBO);
 	info.shader_prog = gen_shader_prog(
 		"e:\\proj\\platformer\\shaders\\vertex\\default.glsl",
 		"e:\\proj\\platformer\\shaders\\fragment\\default.glsl");
