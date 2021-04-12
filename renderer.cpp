@@ -5,10 +5,18 @@
 
 #include "inc_ogl.h"
 
+c_render_info::c_render_info () : VAO (0), VBO (0), shader_prog (0) { }
 
-GLuint gen_VBO (std::vector<GLfloat> vertices)
+c_render_info::~c_render_info ()
 {
-	GLuint VBO;
+	if (VAO == 0)
+		glDeleteVertexArrays(1, &VAO);
+	if (VBO == 0)
+		glDeleteBuffers(1, &VBO);
+}
+
+void c_render_info::gen_VBO (std::vector<GLfloat> vertices)
+{
     glGenBuffers(1, &VBO);
  
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -17,13 +25,10 @@ GLuint gen_VBO (std::vector<GLfloat> vertices)
     	vertices.data(), GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	return VBO;
 }
 
-GLuint gen_VAO (GLuint VBO)
+void c_render_info::gen_VAO ()
 {
-	GLuint VAO;
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
  
@@ -35,8 +40,6 @@ GLuint gen_VAO (GLuint VBO)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
  
     glBindVertexArray(0);
-
-    return VAO;
 }
 
 void get_shader_source (std::string *src, std::string path)
@@ -76,12 +79,7 @@ GLuint compile_shader (std::string src, GLenum type)
 	return shader;
 }
 
-GLuint link_program ()
-{
-	
-}
-
-GLuint gen_shader_prog (
+void c_render_info::gen_shader_prog (
 	std::string vertex_path, 
 	std::string fragment_path)
 {
@@ -96,7 +94,7 @@ GLuint gen_shader_prog (
 	get_shader_source(&fragment_src, fragment_path);
 	GLuint frag = compile_shader(fragment_src, GL_FRAGMENT_SHADER);
 
-	GLuint shader_prog = glCreateProgram();
+	shader_prog = glCreateProgram();
 	glAttachShader(shader_prog, vert);
 	glAttachShader(shader_prog, frag);
 	glLinkProgram(shader_prog);
@@ -108,14 +106,12 @@ GLuint gen_shader_prog (
 
 	glDeleteShader(vert);
 	glDeleteShader(frag);
-
-	return shader_prog;
 }
 
-void draw (renderer_info info)
+void c_render_info::draw ()
 {
-	glUseProgram(info.shader_prog);
-	glBindVertexArray(info.VAO);
+	glUseProgram(shader_prog);
+	glBindVertexArray(VAO);
 	glEnableVertexAttribArray(0);
 	
 	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);

@@ -46,7 +46,7 @@ int main ()
 
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 
-	renderer_info info;
+	c_render_info info;
 
 	std::vector<GLfloat> vertices = {
 		-0.5, 0.5, 0.0,
@@ -55,9 +55,9 @@ int main ()
 		0.5, 0.5, 0.0,
 	};
 
-	info.VBO = gen_VBO(vertices);
-	info.VAO = gen_VAO(info.VBO);
-	info.shader_prog = gen_shader_prog(
+	info.gen_VBO(vertices);
+	info.gen_VAO();
+	info.gen_shader_prog(
 		"e:\\proj\\platformer\\shaders\\vertex\\default.glsl",
 		"e:\\proj\\platformer\\shaders\\fragment\\default.glsl");
  
@@ -65,14 +65,11 @@ int main ()
     {
         glClear(GL_COLOR_BUFFER_BIT);
  
-        draw(info);
+        info.draw();
  
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
- 
-    // glDeleteVertexArrays(1, &info.VAO);
-    // glDeleteBuffers(1, &info.VBO);
  
     glfwTerminate();
     return 0;
