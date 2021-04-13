@@ -1,9 +1,12 @@
 #include <iostream>
 #include <conio.h>
 #include <vector>
+#include <ctime>
+#include <cmath>
 
-#include "inc_ogl.h"
+#include "ogl.h"
 #include "renderer.h"
+#include "shader.h"
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
@@ -48,18 +51,39 @@ int main ()
 
 	c_render_info info;
 
-	std::vector<GLfloat> vertices = {
-		-0.5, 0.5, 0.0,
-		-0.5, -0.5, 0.0,
-		0.5, -0.5, 0.0,
-		0.5, 0.5, 0.0,
+	std::vector<GLfloat> vertex_data = {
+		-0.5, 0.5, 0.0, 	// vertex 1
+		1.0, 1.0, 1.0, 		// colour 1
+		-0.5, -0.5, 0.0, 	// vertex 2
+		1.0, 0.0, 0.0,		// colour 2
+		0.5, -0.5, 0.0, 	// vertex 3
+		0.0, 1.0, 0.0,		// colour 3
+		0.5, 0.5, 0.0, 		// vertex 4
+		0.0, 0.0, 1.0		// colour 4
 	};
 
-	info.gen_VBO(vertices);
-	info.gen_VAO();
-	info.gen_shader_prog(
-		"e:\\proj\\platformer\\shaders\\vertex\\default.glsl",
-		"e:\\proj\\platformer\\shaders\\fragment\\default.glsl");
+	std::vector<GLuint> attrib_sizes;
+	attrib_sizes.push_back(3);
+	attrib_sizes.push_back(3);
+
+	info.gen_VBO(vertex_data);
+	info.gen_VAO(attrib_sizes, 6);
+	// info.gen_shader_prog(
+	// 	"shaders\\vertex\\default.glsl",
+	// 	"shaders\\fragment\\default.glsl");
+
+	c_shader shader;
+	shader.attach_shader("shaders\\vertex\\default.glsl", 
+		GL_VERTEX_SHADER);
+	shader.attach_shader("shaders\\fragment\\default.glsl", 
+		GL_FRAGMENT_SHADER);
+	shader.link_program();
+
+	GLfloat transp = sin((float)clock()/(float)CLOCKS_PER_SEC)
+		* 0.5 + 0.5;
+	shader.attach_uniform("transparency", VEC_1F, 1, &transp);
+
+	info.shader = &shader;
  
     while (!glfwWindowShouldClose(window))
     {
@@ -69,6 +93,9 @@ int main ()
  
         glfwSwapBuffers(window);
         glfwPollEvents();
+
+        transp = sin((float)clock()/(float)CLOCKS_PER_SEC)
+		* 0.5 + 0.5;
     }
  
     glfwTerminate();

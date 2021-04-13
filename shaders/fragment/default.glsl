@@ -1,8 +1,12 @@
 #version 330 core
 
-out vec4 color;
+in vec3 v_colour;
+
+out vec4 colour;
+
+uniform float transparency;
 
 void main()
 {
-	color = vec4(0.0f, 1.0f, 0.0f, 1.0f);
+	colour = vec4(v_colour.xyz * transparency, 1.0);
 }

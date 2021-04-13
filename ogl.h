@@ -1,5 +1,5 @@
-#ifndef INCLUDE_OGL
-#define INCLUDE_OGL
+#ifndef INCLUDE_OGL_H
+#define INCLUDE_OGL_H
 
 #define GLEW_STATIC
 #include "include/GL/glew.h"
